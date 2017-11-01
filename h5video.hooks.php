@@ -4,12 +4,20 @@
  * The H5Video extension embeds a video file uploaded to the wiki by creating a
  * html 5 conform video (and nested source) element.
  *
- * The H5VideoHooks class implements the according parser extension. 
+ * The H5VideoHooks class implements the parser extension for the 'video' tag. 
  *
  * @author Andreas Schroeder <andreas@a-netz.de>
  */
 class H5VideoHooks {
 
+    /** Default (and only accepted) tag attributes / options. */
+    private static $def_opts = array(
+        'width' => '640',
+        'height' => '360',
+        'controls' => 'controls',
+    );
+
+    
     /**
      * Register the parser hooks.
      * 
@@ -44,7 +52,7 @@ class H5VideoHooks {
 
     
     /**
-     * Return html code for HTML5 video player element.
+     * Generate markup for HTML5 video player element.
      *
      * At the moment, only one mp4 video file is supported. Multiple files and
      * other formats are not supported.
@@ -54,7 +62,7 @@ class H5VideoHooks {
      *
      * @return The html code to embed in the page.
      */
-    private static function getHtml5VideoCode($src, $opts) {
+    private static function getHtml5VideoMarkup($src, $opts) {
         $html = '<video ' . H5VideoHooks::getHtmlOpts($opts) . '>'
             . '<source src="' . $src . '" type="video/mp4" />'
             . '</video>';
@@ -62,6 +70,17 @@ class H5VideoHooks {
         return $html;
     }
 
+
+    /**
+     * Generate markup for error message.
+     */
+    private static function getErrorMarkup($error) {
+        $html = '<p style="color:red;">'
+            . '<b>ERROR:</b> '
+            . $error
+            . '</p>';
+    }
+    
     
     /**
      * Convert the media source information passed in the video tag to a
@@ -82,13 +101,11 @@ class H5VideoHooks {
     private static function resolveUrl($src, $parser, $frame) {
         $url = NULL;
         
-        /*
-         * Parse data, e.g. to support usign the video tag in templates
-         * (using a template parameter like {{{1}}}).
+        /* Parse data, e.g. to support usign the video tag in templates (using a
+         * template parameter like {{{1}}}).
          *
-         * Special care for external URLs, as these should not be converted to
-         * links by the wiki.
-         */
+         * Special care for external URLs (starting with http / https), as these
+         * should not be converted to links by the wiki. */
         if( (strtolower(substr($src, 0, 7)) != 'http://')
             && (strtolower(substr($src, 0, 8)) != 'https://')) {
             $src = $parser->recursiveTagParse($src, $frame);
@@ -107,6 +124,30 @@ class H5VideoHooks {
 
         return $url;
     }
+
+
+    /**
+     * Calculate application options from tag attributes and default
+     * values. Invalid options are filtered out and all missing options are set
+     * from default values.
+     *
+     * @param string $attribs: The tag attributes of the video tag.
+     * @return array: All applicable options.
+     */
+    private static function getTagOptions($attribs) {
+        $def_opts = array(
+            'width' => '640',
+            'height' => '360',
+            'controls' => 'controls',
+        );
+        
+        /* Discard all keys which are not in def_opts. Then set all missing
+         * keys / values from the default values. */
+        $opts = array_intersect_key($attribs, H5VideoHooks::$def_opts);        
+        $opts = array_merge(H5VideoHooks::$def_opts, $opts);
+
+        return $opts;
+    }
     
     
     /**
@@ -121,27 +162,15 @@ class H5VideoHooks {
      *
      * @return string: HTML to insert in the page.
      */
-    public static function parserTagVideo( $data, $attribs, $parser, $frame ) {
-        
-        /* Default (and only accepted) options. */
-        $def_opts = array(
-            'width' => '640',
-            'height' => '360',
-            'controls' => 'controls'
-        );
-        
-        /* discard all options which are not in def_opts. */
-        $opts = array_intersect_key($attribs, $def_opts);        
-        $opts = array_merge($def_opts, $opts);
-
+    public static function parserTagVideo($data, $attribs, $parser, $frame) {
+        $opts = H5VideoHooks::getTagOptions($attribs);
         $url = H5VideoHooks::resolveUrl($data, $parser, $frame);
         
         if($url !== NULL) {
-            $html = H5VideoHooks::getHtml5VideoCode($url, $opts);
+            $html = H5VideoHooks::getHtml5VideoMarkup($url, $opts);
         } else {
-            $html = '<p style="color:red;"><b>ERROR:</b> '
-                . "Media file <tt>$data</tt> not found."
-                . '</p>';
+            $msg = "Media file <tt>$data</tt> not found.";
+            $html = H5VideoHooks::getErrorMarkup($msg);
         }
 
         return $html;
