@@ -51,6 +51,30 @@ class H5vHooks {
         return $html;
     }
 
+    /**
+     * Convert the source information passed in the video tag to a
+     * meaningful URL or NULL.
+     *
+     * If $src starts with "File:", it tries to locate the file in
+     * mediawiki. Else it handles it as a external URL without
+     * modification.
+     */
+    private static function resolveUrl($src) {
+        $url = NULL;
+        
+        if(strtolower(substr($src, 0, 5)) == 'file:') {
+            $src = substr($src, 5);
+            $file = wfFindFile($src);
+            if($file !== false) {
+                $url = $file->getFullUrl();
+            }
+        } else {
+            $url = $src;
+        }
+
+        return $url;
+    }
+    
     
     /**
      * Parser hook handler for <video> tag.
@@ -80,14 +104,14 @@ class H5vHooks {
         /* Parse data to support videos like [[Media:File.mp4]] 
          * Currently not supported. Instead the file / media name is
          * resolved manually. */
-        //$data = $parser->recursiveTagParse( $data, $frame );
+        $data = $parser->recursiveTagParse( $data, $frame );
+
+        $url = H5vHooks::resolveUrl($data);
         
-        $file = wfFindFile($data);
-        if($file !== false) {
-            $url = $file->getFullUrl();
+        if($url !== NULL) {
             $html = H5vHooks::getHtml5VideoCode($url, $opts);
         } else {
-            $html = "<p>Media file <tt>$data</tt> not found.</p>";            
+            $html = "<p style=\"color:red;\"><b>ERROR:</b> Media file <tt>$data</tt> not found.</p>";            
         }
 
         return $html;

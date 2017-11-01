@@ -2,15 +2,13 @@
 
 Mediawiki extension to create HTML 5 conform video tags. 
 
-License
--------
+## License
 
 This software is distributed under the terms of the MIT license. See
 the ``LICENSE.rst`` file for details.
 
 
-Installation
-------------
+## Installation
 
 Install the extension as usual for mediawiki:
 
@@ -24,14 +22,19 @@ Install the extension as usual for mediawiki:
 - Go to the `Special:Version` page of your Mediawiki to verify that
   the h5v extension is loaded.
 
-Usage
------
+## Usage
 
 Use the video tag in any wiki page as follows::
 
-  <video width="640" height="360">MediaFile</video>
+  <video width="640" height="360">File:MediaFile.mp4</video>
+  <video width="640" height="360">../../LocalPath/MyFile.mp4</video>
+  <video width="640" height="360">http://myhost/MyFile.mp4</video>
 
-The MediaFile is the name of a file as uploaded to the wiki. The
-attributes for width and height are optional.
+
+The MediaFile is either a file uploaded to the wiki or a path / url
+pointing to an external source.
+
+The attributes for width and height are optional and default to 640 x
+360.
 
 
