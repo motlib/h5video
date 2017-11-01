@@ -1,6 +1,7 @@
 {
     "name": "h5v",
     "version": "0.0.1-dev",
+    "license-name": "MIT",
     "author": [
 	"Andreas Schroeder"
     ],
