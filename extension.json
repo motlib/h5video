@@ -19,5 +19,6 @@
     },
     "AutoloadClasses": {
 	"H5vHooks": "h5v.hooks.php"
-    }
+    },
+    "manifest_version": 1
 }
