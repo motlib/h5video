@@ -24,11 +24,11 @@ Install the extension as usual for mediawiki:
 
 ## Usage
 
-Use the video tag in any wiki page as follows::
+Use the video tag in any wiki page as follows:
 
-  <video width="640" height="360">File:MediaFile.mp4</video>
-  <video width="640" height="360">../../LocalPath/MyFile.mp4</video>
-  <video width="640" height="360">http://myhost/MyFile.mp4</video>
+    <video width="640" height="360">File:MediaFile.mp4</video>
+    <video width="640" height="360">../../LocalPath/MyFile.mp4</video>
+    <video width="640" height="360">http://myhost/MyFile.mp4</video>
 
 
 The MediaFile is either a file uploaded to the wiki or a path / url
