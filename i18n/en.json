@@ -4,5 +4,5 @@
             "Andreas Schroeder"
         ]
     },
-    "h5v-desc": "Embed video files with HTML 5 video player in wiki pages by providing the <code>&lt;video&gt;</code> parser tag."
+    "h5video-desc": "Embed video files with default HTML 5 video player in wiki pages by providing the <code>&lt;video&gt;</code> parser tag."
 }

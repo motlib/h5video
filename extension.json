@@ -1,25 +1,25 @@
 {
-    "name": "h5v",
+    "name": "h5video",
     "version": "0.0.2-dev",
     "license-name": "MIT",
     "author": [
 	"Andreas Schroeder"
     ],
-    "url": "http://aee.cn.kostal.int/git/schroe03/h5v",
-    "descriptionmsg": "h5v-desc",
+    "url": "http://github.com/motlib/h5video",
+    "descriptionmsg": "h5video-desc",
     "type": "parserhook",
     "MessagesDirs": {
-	"h5v": [
+	"h5video": [
 	    "i18n"
 	]
     },
     "Hooks": {
 	"ParserFirstCallInit": [
-	    "H5vHooks::onParserFirstCallInit"
+	    "H5VideoHooks::onParserFirstCallInit"
 	]
     },
     "AutoloadClasses": {
-	"H5vHooks": "h5v.hooks.php"
+	"H5VideoHooks": "h5video.hooks.php"
     },
     "manifest_version": 1
 }

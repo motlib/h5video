@@ -1,12 +1,14 @@
 <?php
 
 /**
- * The H5v (Html5Video) extension embeds a video file uploaded to the wiki by
- * creating a html 5 conform video (and nested source) element.
+ * The H5Video extension embeds a video file uploaded to the wiki by creating a
+ * html 5 conform video (and nested source) element.
+ *
+ * The H5VideoHooks class implements the according parser extension. 
  *
  * @author Andreas Schroeder <andreas@a-netz.de>
  */
-class H5vHooks {
+class H5VideoHooks {
 
     /**
      * Register the parser hooks.
@@ -15,7 +17,7 @@ class H5vHooks {
      */
     public static function onParserFirstCallInit(&$parser) {
         /* Register parser for video tag and corresponding function to call. */
-        $parser->setHook('video', 'H5vHooks::parserTagVideo');
+        $parser->setHook('video', 'H5VideoHooks::parserTagVideo');
 
         return true;
     }
@@ -53,7 +55,7 @@ class H5vHooks {
      * @return The html code to embed in the page.
      */
     private static function getHtml5VideoCode($src, $opts) {
-        $html = '<video ' . H5vHooks::getHtmlOpts($opts) . '>'
+        $html = '<video ' . H5VideoHooks::getHtmlOpts($opts) . '>'
             . '<source src="' . $src . '" type="video/mp4" />'
             . '</video>';
 
@@ -132,10 +134,10 @@ class H5vHooks {
         $opts = array_intersect_key($attribs, $def_opts);        
         $opts = array_merge($def_opts, $opts);
 
-        $url = H5vHooks::resolveUrl($data, $parser, $frame);
+        $url = H5VideoHooks::resolveUrl($data, $parser, $frame);
         
         if($url !== NULL) {
-            $html = H5vHooks::getHtml5VideoCode($url, $opts);
+            $html = H5VideoHooks::getHtml5VideoCode($url, $opts);
         } else {
             $html = '<p style="color:red;"><b>ERROR:</b> '
                 . "Media file <tt>$data</tt> not found."
