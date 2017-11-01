@@ -1,21 +1,20 @@
 <?php
 
 /**
- * The H5v (Html5Video) extension embeds a video file uploaded to the
- * wiki by creating a html 5 conform video element.
+ * The H5v (Html5Video) extension embeds a video file uploaded to the wiki by
+ * creating a html 5 conform video (and nested source) element.
  *
  * @author Andreas Schroeder <andreas@a-netz.de>
  */
 class H5vHooks {
 
     /**
-     * Register parser hooks.
+     * Register the parser hooks.
      * 
      * See http://www.mediawiki.org/wiki/Manual:Parser_functions
      */
     public static function onParserFirstCallInit(&$parser) {
-        /* Register parser for video tag and corresponding function to
-         * call. */
+        /* Register parser for video tag and corresponding function to call. */
         $parser->setHook('video', 'H5vHooks::parserTagVideo');
 
         return true;
@@ -24,8 +23,12 @@ class H5vHooks {
     /**
      * Build html attribute string.
      *
-     * Very important to escape user data with htmlspecialchars() to
-     * prevent an XSS security vulnerability.
+     * Escape user data with htmlspecialchars() to prevent a XSS security
+     * vulnerability.
+     *
+     * @param array $opts: A key value array with the attribute data.
+     *
+     * @return A string in the form key1="value1" key2="value2"... 
      */
     private static function getHtmlOpts($opts) { 
         $result = '';
@@ -41,7 +44,13 @@ class H5vHooks {
     /**
      * Return html code for HTML5 video player element.
      *
-     * At the moment, only mp4 video format is supported.
+     * At the moment, only one mp4 video file is supported. Multiple files and
+     * other formats are not supported.
+     *
+     * @param string $src: The path / URL to the video file.
+     * @param array $opts: The options (HTML attributes and values) to use.
+     *
+     * @return The html code to embed in the page.
      */
     private static function getHtml5VideoCode($src, $opts) {
         $html = '<video ' . H5vHooks::getHtmlOpts($opts) . '>'
@@ -51,26 +60,39 @@ class H5vHooks {
         return $html;
     }
 
+    
     /**
-     * Convert the source information passed in the video tag to a
-     * meaningful URL or NULL.
+     * Convert the media source information passed in the video tag to a
+     * meaningful URL.
      *
      * If $src starts with "File:", it tries to locate the file in
      * mediawiki. Else it handles it as a external URL without
      * modification.
+     *
+     * @param string $src: The media source, i.e. content of the video tag.
+     * @param Parser $parser: The parser object, used to render wiki code.
+     * @param PPFrame $frame: Used in conjunction with $parser to render wiki
+     *   code.
+     *
+     * @return string: The URL or NULL, if there is no matching file in the
+     *   wiki.
      */
     private static function resolveUrl($src, $parser, $frame) {
         $url = NULL;
         
-        /* Parse data to support e.g. use in templates (e.g. using a
-         * template parameter like {{{1}}}. Special care for external
-         * URLs, as these should not be converted to links by the
-         * wiki.  */
+        /*
+         * Parse data, e.g. to support usign the video tag in templates
+         * (using a template parameter like {{{1}}}).
+         *
+         * Special care for external URLs, as these should not be converted to
+         * links by the wiki.
+         */
         if( (strtolower(substr($src, 0, 7)) != 'http://')
             && (strtolower(substr($src, 0, 8)) != 'https://')) {
             $src = $parser->recursiveTagParse($src, $frame);
         }
 
+        /* Check for file: prefix and resolve its file path. */
         if(strtolower(substr($src, 0, 5)) == 'file:') {
             $src = substr($src, 5);
             $file = wfFindFile($src);
@@ -115,7 +137,9 @@ class H5vHooks {
         if($url !== NULL) {
             $html = H5vHooks::getHtml5VideoCode($url, $opts);
         } else {
-            $html = "<p style=\"color:red;\"><b>ERROR:</b> Media file <tt>$data</tt> not found.</p>";            
+            $html = '<p style="color:red;"><b>ERROR:</b> '
+                . "Media file <tt>$data</tt> not found."
+                . '</p>';
         }
 
         return $html;

@@ -1,12 +1,12 @@
 {
     "name": "h5v",
-    "version": "0.0.0",
+    "version": "0.0.1-dev",
     "author": [
 	"Andreas Schroeder"
     ],
-    "url": "n/a",
+    "url": "http://aee.cn.kostal.int/git/schroe03/h5v",
     "descriptionmsg": "h5v-desc",
-    "type": "parserfunction",
+    "type": "parserhook",
     "MessagesDirs": {
 	"h5v": [
 	    "i18n"
