@@ -14,11 +14,6 @@ the ``COPYING`` file for details.
 
 Install the extension as usual for mediawiki:
 
-    bla
-    bla
-    
-    
-
 - Copy or `git clone` this project to a subfolder named `h5v` in the
   `extension` folder of your mediawiki installation.
   
