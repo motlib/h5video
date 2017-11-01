@@ -1,0 +1,23 @@
+{
+    "name": "h5v",
+    "version": "0.0.0",
+    "author": [
+	"Andreas Schroeder"
+    ],
+    "url": "n/a",
+    "descriptionmsg": "h5v-desc",
+    "type": "parserfunction",
+    "MessagesDirs": {
+	"h5v": [
+	    "i18n"
+	]
+    },
+    "Hooks": {
+	"ParserFirstCallInit": [
+	    "H5vHooks::onParserFirstCallInit"
+	]
+    },
+    "AutoloadClasses": {
+	"H5vHooks": "h5v.hooks.php"
+    }
+}
