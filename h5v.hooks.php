@@ -59,9 +59,18 @@ class H5vHooks {
      * mediawiki. Else it handles it as a external URL without
      * modification.
      */
-    private static function resolveUrl($src) {
+    private static function resolveUrl($src, $parser, $frame) {
         $url = NULL;
         
+        /* Parse data to support e.g. use in templates (e.g. using a
+         * template parameter like {{{1}}}. Special care for external
+         * URLs, as these should not be converted to links by the
+         * wiki.  */
+        if( (strtolower(substr($src, 0, 7)) != 'http://')
+            && (strtolower(substr($src, 0, 8)) != 'https://')) {
+            $src = $parser->recursiveTagParse($src, $frame);
+        }
+
         if(strtolower(substr($src, 0, 5)) == 'file:') {
             $src = substr($src, 5);
             $file = wfFindFile($src);
@@ -101,12 +110,7 @@ class H5vHooks {
         $opts = array_intersect_key($attribs, $def_opts);        
         $opts = array_merge($def_opts, $opts);
 
-        /* Parse data to support videos like [[Media:File.mp4]] 
-         * Currently not supported. Instead the file / media name is
-         * resolved manually. */
-        $data = $parser->recursiveTagParse( $data, $frame );
-
-        $url = H5vHooks::resolveUrl($data);
+        $url = H5vHooks::resolveUrl($data, $parser, $frame);
         
         if($url !== NULL) {
             $html = H5vHooks::getHtml5VideoCode($url, $opts);
