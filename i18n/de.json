@@ -4,6 +4,6 @@
             "Andreas Schroeder"
         ]
     },
-    "h5video-desc": "Embed video files with default HTML 5 video player in wiki pages by providing the <code>&lt;video&gt;</code> parser tag.",
+    "h5video-desc": "Einbetten von Video-Dateien in Wiki-Seiten mit dem Standard HTML 5 Video-Player. Stellt den <code>&lt;video&gt;</code> Parser-Tag zur Verfuegung.",
     "invalid-source-error": "Die Medien-Datei wurde nicht gefunden. Bitte den Inhalt des 'video'-Tags pruefen."
 }
