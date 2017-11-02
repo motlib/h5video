@@ -79,6 +79,8 @@ class H5VideoHooks {
             . '<b>ERROR:</b> '
             . $error
             . '</p>';
+
+        return $html;
     }
     
     
@@ -169,7 +171,7 @@ class H5VideoHooks {
         if($url !== NULL) {
             $html = H5VideoHooks::getHtml5VideoMarkup($url, $opts);
         } else {
-            $msg = "Media file <tt>$data</tt> not found.";
+            $msg = wfMessage('invalid-source-error')->plain();
             $html = H5VideoHooks::getErrorMarkup($msg);
         }
 

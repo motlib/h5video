@@ -1,0 +1,9 @@
+{
+    "@metadata": {
+        "authors": [
+            "Andreas Schroeder"
+        ]
+    },
+    "h5video-desc": "Description of the h5video extension. ",
+    "invalid-source-error": "Error message shown if the media source (as a reference to a file uploaded to MediaWiki, like 'File:MyFile.mp4' could not be located."
+}
