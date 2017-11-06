@@ -9,7 +9,7 @@
  * @author Andreas Schroeder <andreas@a-netz.de>
  */
 class H5VideoHooks {
-
+    
     /** Default (and only accepted) tag attributes / options. */
     private static $def_opts = array(
         'width' => '640',
@@ -62,8 +62,10 @@ class H5VideoHooks {
      *
      * @return The html code to embed in the page.
      */
-    private static function getHtml5VideoMarkup($src, $opts) {
-        $html = '<video ' . H5VideoHooks::getHtmlOpts($opts) . '>'
+    private static function getHtml5VideoMarkup($src, $attribs) {
+        $opts = self::getTagOptions($attribs);
+
+        $html = '<video ' . self::getHtmlOpts($opts) . '>'
             . '<source src="' . $src . '" type="video/mp4" />'
             . '</video>';
 
@@ -101,30 +103,37 @@ class H5VideoHooks {
      *   wiki.
      */
     private static function resolveUrl($src, $parser, $frame) {
-        $url = NULL;
-        
-        /* Parse data, e.g. to support usign the video tag in templates (using a
-         * template parameter like {{{1}}}).
-         *
-         * Special care for external URLs (starting with http / https), as these
-         * should not be converted to links by the wiki. */
-        if( (strtolower(substr($src, 0, 7)) != 'http://')
-            && (strtolower(substr($src, 0, 8)) != 'https://')) {
-            $src = $parser->recursiveTagParse($src, $frame);
+        $src = trim($src);
+
+        /* Special care for external URLs (starting with http / https), as these
+         * should not be converted to html <a href="..."> style links. */
+        $res = preg_match('/^https?:\/\/.*$/', $src, $match);
+        if($res === 1) {
+            $parser->getOutput()->addExternalLink($src);
+
+            return $src;
         }
+
+        /* Parse data, e.g. to support using the video tag in templates (using a
+         * template parameter like {{{1}}}). */
+        $src = $parser->recursiveTagParse($src, $frame);
 
         /* Check for file: prefix and resolve its file path. */
-        if(strtolower(substr($src, 0, 5)) == 'file:') {
-            $src = substr($src, 5);
-            $file = wfFindFile($src);
+        $res = preg_match('/^file:(.*)$/i', $src, $match);
+        if($res === 1) {
+            $name = $match[1];
+            
+            $file = wfFindFile($name);
             if($file !== false) {
-                $url = $file->getFullUrl();
+                /* Register file use. */
+                $parser->getOutput()->addImage(
+                    $file->getTitle()->getDBkey());
+
+                return $file->getFullUrl();
             }
-        } else {
-            $url = $src;
         }
 
-        return $url;
+        return NULL;
     }
 
 
@@ -137,16 +146,10 @@ class H5VideoHooks {
      * @return array: All applicable options.
      */
     private static function getTagOptions($attribs) {
-        $def_opts = array(
-            'width' => '640',
-            'height' => '360',
-            'controls' => 'controls',
-        );
-        
         /* Discard all keys which are not in def_opts. Then set all missing
          * keys / values from the default values. */
-        $opts = array_intersect_key($attribs, H5VideoHooks::$def_opts);        
-        $opts = array_merge(H5VideoHooks::$def_opts, $opts);
+        $opts = array_intersect_key($attribs, self::$def_opts);        
+        $opts = array_merge(self::$def_opts, $opts);
 
         return $opts;
     }
@@ -165,16 +168,13 @@ class H5VideoHooks {
      * @return string: HTML to insert in the page.
      */
     public static function parserTagVideo($data, $attribs, $parser, $frame) {
-        $opts = H5VideoHooks::getTagOptions($attribs);
-        $url = H5VideoHooks::resolveUrl($data, $parser, $frame);
-        
-        if($url !== NULL) {
-            $html = H5VideoHooks::getHtml5VideoMarkup($url, $opts);
-        } else {
+        $url = self::resolveUrl($data, $parser, $frame);
+
+        if($url == NULL) {
             $msg = wfMessage('invalid-source-error')->plain();
-            $html = H5VideoHooks::getErrorMarkup($msg);
+            return self::getErrorMarkup($msg);
         }
 
-        return $html;
+        return self::getHtml5VideoMarkup($url, $attribs);
     }
 };
