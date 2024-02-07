@@ -1,6 +1,6 @@
 <?php
 
-using MediaWiki\MediaWikiServices;
+use MediaWiki\MediaWikiServices;
 
 /**
  * The H5Video extension embeds a video file uploaded to the wiki by creating a
