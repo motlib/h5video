@@ -4,12 +4,12 @@
  * The H5Video extension embeds a video file uploaded to the wiki by creating a
  * html 5 conform video (and nested source) element.
  *
- * The H5VideoHooks class implements the parser extension for the 'video' tag. 
+ * The H5VideoHooks class implements the parser extension for the 'video' tag.
  *
  * @author Andreas Schroeder <andreas@a-netz.de>
  */
 class H5VideoHooks {
-    
+
     /** Default (and only accepted) tag attributes / options. */
     private static $def_opts = array(
         'width' => '640',
@@ -17,10 +17,10 @@ class H5VideoHooks {
         'controls' => 'controls',
     );
 
-    
+
     /**
      * Register the parser hooks.
-     * 
+     *
      * See http://www.mediawiki.org/wiki/Manual:Parser_functions
      */
     public static function onParserFirstCallInit(&$parser) {
@@ -38,19 +38,19 @@ class H5VideoHooks {
      *
      * @param array $opts: A key value array with the attribute data.
      *
-     * @return A string in the form key1="value1" key2="value2"... 
+     * @return A string in the form key1="value1" key2="value2"...
      */
-    private static function getHtmlOpts($opts) { 
+    private static function getHtmlOpts($opts) {
         $result = '';
-            
+
         foreach($opts as $opt => $val) {
             $result .= $opt . '="' . htmlspecialchars($val) . '" ';
         }
-        
+
         return $result;
     }
 
-    
+
     /**
      * Generate markup for HTML5 video player element.
      *
@@ -84,8 +84,8 @@ class H5VideoHooks {
 
         return $html;
     }
-    
-    
+
+
     /**
      * Convert the media source information passed in the video tag to a
      * meaningful URL.
@@ -122,8 +122,10 @@ class H5VideoHooks {
         $res = preg_match('/^file:(.*)$/i', $src, $match);
         if($res === 1) {
             $name = $match[1];
-            
-            $file = wfFindFile($name);
+
+            $repogroup = MediaWikiServices::getInstance()->getRepoGroup()
+            $file = $repogroup->findFile($name);
+
             if($file !== false) {
                 /* Register file use. */
                 $parser->getOutput()->addImage(
@@ -148,13 +150,13 @@ class H5VideoHooks {
     private static function getTagOptions($attribs) {
         /* Discard all keys which are not in def_opts. Then set all missing
          * keys / values from the default values. */
-        $opts = array_intersect_key($attribs, self::$def_opts);        
+        $opts = array_intersect_key($attribs, self::$def_opts);
         $opts = array_merge(self::$def_opts, $opts);
 
         return $opts;
     }
-    
-    
+
+
     /**
      * Parser hook handler for <video> tag.
      *
