@@ -1,5 +1,7 @@
 <?php
 
+using MediaWiki\MediaWikiServices;
+
 /**
  * The H5Video extension embeds a video file uploaded to the wiki by creating a
  * html 5 conform video (and nested source) element.
@@ -123,7 +125,7 @@ class H5VideoHooks {
         if($res === 1) {
             $name = $match[1];
 
-            $repogroup = MediaWikiServices::getInstance()->getRepoGroup()
+            $repogroup = MediaWikiServices::getInstance()->getRepoGroup();
             $file = $repogroup->findFile($name);
 
             if($file !== false) {
