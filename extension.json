@@ -1,25 +1,25 @@
 {
     "name": "h5video",
-    "version": "0.0.4-dev",
+    "version": "0.0.4",
     "license-name": "MIT",
     "author": [
-	"Andreas Schroeder"
+        "Andreas Schroeder"
     ],
     "url": "http://github.com/motlib/h5video",
     "descriptionmsg": "h5video-desc",
     "type": "parserhook",
     "MessagesDirs": {
-	"h5video": [
-	    "i18n"
-	]
+        "h5video": [
+            "i18n"
+        ]
     },
     "Hooks": {
-	"ParserFirstCallInit": [
-	    "H5VideoHooks::onParserFirstCallInit"
-	]
+        "ParserFirstCallInit": [
+            "H5VideoHooks::onParserFirstCallInit"
+        ]
     },
     "AutoloadClasses": {
-	"H5VideoHooks": "h5video.hooks.php"
+        "H5VideoHooks": "h5video.hooks.php"
     },
     "manifest_version": 1
 }
